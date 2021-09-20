@@ -1,14 +1,12 @@
 const express = require('express');
-const path = require('path');
-const rootDir = require('../util/path');
+const { render } = require('pug');
 
 const router = express.Router();
 
 const products = [];
 
 router.get('/add-product', (req, res, next) => {
-  const filePath = path.join(rootDir, 'views', 'add-product.html');
-  res.sendFile(filePath);
+  res.render('add-product');
 });
 
 router.post('/add-product', (req, res, next) => {
