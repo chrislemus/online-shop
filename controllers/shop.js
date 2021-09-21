@@ -40,6 +40,12 @@ exports.postCart = (req, res, next) => {
   res.redirect('/cart');
 };
 
+exports.postCartDeleteProduct = (req, res, next) => {
+  const { productId } = req.body;
+  Cart.deleteProductById(productId);
+  res.redirect('/cart');
+};
+
 exports.getCart = (req, res, next) => {
   Cart.getCart((cart) => {
     Product.fetchAll((products) => {
