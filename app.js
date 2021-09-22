@@ -39,13 +39,11 @@ Product.belongsToMany(Cart, { through: CartItem });
 sequelize
   // .sync({ force: true })
   .sync()
-  .then(() => {
-    return User.findOrCreate({
-      where: {
-        name: 'Chris',
-        email: 'test@test.com',
-      },
-    });
+  .then(() => User.findByPk(1))
+  .then((user) => {
+    if (!user) return User.create({ name: 'Chris', email: 'test@test.com' });
+    return user;
   })
-  .then(() => app.listen(3000))
+  .then((user) => user.createCart())
+  .then((cart) => app.listen(3000))
   .catch((err) => console.log(err));
