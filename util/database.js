@@ -1,10 +1,15 @@
-const Sequelize = require('sequelize');
+const mongodb = require('mongodb');
+const { MongoClient } = mongodb;
+const mongoDbPassword = encodeURIComponent(process.env.MONGO_DB_PASSWORD);
+const mongoConnect = (callback) => {
+  MongoClient.connect(
+    `mongodb+srv://adminUser:${mongoDbPassword}@cluster0.rwx03.mongodb.net/nodejs-online-shop?retryWrites=true&w=majority`
+  )
+    .then((client) => {
+      console.log('connected to mongo DB');
+      callback(client);
+    })
+    .catch((err) => console.log(err));
+};
 
-const sequelize = new Sequelize(
-  'node-shop-store',
-  'root',
-  process.env.MYSQL_DB_PASSWORD,
-  { dialect: 'mysql', host: 'localhost' }
-);
-
-module.exports = sequelize;
+module.exports = mongoConnect;
