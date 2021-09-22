@@ -1,58 +1,72 @@
-const fs = require('fs');
-const path = require('path');
+const Sequelize = require('sequelize');
+const sequelize = require('../util/database');
 
-const p = path.join(path.dirname(require.main.filename), 'data', 'cart.json');
+const Cart = sequelize.define('cart', {
+  id: {
+    type: Sequelize.INTEGER,
+    autoIncrement: true,
+    allowNull: false,
+    primaryKey: true,
+  },
+});
 
-module.exports = class Cart {
-  static addProduct(id, productPrice) {
-    fs.readFile(p, (err, fileContent) => {
-      let cart = { products: [], totalPrice: 0 };
+module.exports = Cart;
 
-      if (!err && fileContent.length > 0) cart = JSON.parse(fileContent);
+// const fs = require('fs');
+// const path = require('path');
 
-      const existingProductIndex = cart.products.findIndex(
-        (prod) => prod.id === id
-      );
-      const existingProduct = cart.products[existingProductIndex];
+// const p = path.join(path.dirname(require.main.filename), 'data', 'cart.json');
 
-      let updatedProduct;
-      if (existingProduct) {
-        updatedProduct = { ...existingProduct };
-        updatedProduct.qty = updatedProduct.qty + 1;
-        cart.products = [...cart.products];
-        cart.products[existingProductIndex] = updatedProduct;
-      } else {
-        updatedProduct = { id, qty: 1 };
-        cart.products = [...cart.products, updatedProduct];
-      }
-      cart.totalPrice = cart.totalPrice + +productPrice;
-      fs.writeFile(p, JSON.stringify(cart), (err) => {
-        console.log(err);
-      });
-    });
-  }
+// module.exports = class Cart {
+//   static addProduct(id, productPrice) {
+//     fs.readFile(p, (err, fileContent) => {
+//       let cart = { products: [], totalPrice: 0 };
 
-  static deleteProductById(id) {
-    fs.readFile(p, (err, fileContent) => {
-      if (err) return;
-      const updatedCart = { ...JSON.parse(fileContent) };
-      const product = updatedCart.products.find((prod) => prod.id === id);
-      if (!product) return console.log('product not in cart');
-      updatedCart.products = updatedCart.products.filter(
-        (product) => product.id !== id
-      );
-      updatedCart.totalPrice =
-        updatedCart.totalPrice - product.price * product.qty;
-      fs.writeFile(p, JSON.stringify(updatedCart), (err) => {
-        if (err) console.log(err);
-      });
-    });
-  }
+//       if (!err && fileContent.length > 0) cart = JSON.parse(fileContent);
 
-  static getCart(cb) {
-    fs.readFile(p, (err, fileContent) => {
-      if (err) return cb(null);
-      cb(JSON.parse(fileContent));
-    });
-  }
-};
+//       const existingProductIndex = cart.products.findIndex(
+//         (prod) => prod.id === id
+//       );
+//       const existingProduct = cart.products[existingProductIndex];
+
+//       let updatedProduct;
+//       if (existingProduct) {
+//         updatedProduct = { ...existingProduct };
+//         updatedProduct.qty = updatedProduct.qty + 1;
+//         cart.products = [...cart.products];
+//         cart.products[existingProductIndex] = updatedProduct;
+//       } else {
+//         updatedProduct = { id, qty: 1 };
+//         cart.products = [...cart.products, updatedProduct];
+//       }
+//       cart.totalPrice = cart.totalPrice + +productPrice;
+//       fs.writeFile(p, JSON.stringify(cart), (err) => {
+//         console.log(err);
+//       });
+//     });
+//   }
+
+//   static deleteProductById(id) {
+//     fs.readFile(p, (err, fileContent) => {
+//       if (err) return;
+//       const updatedCart = { ...JSON.parse(fileContent) };
+//       const product = updatedCart.products.find((prod) => prod.id === id);
+//       if (!product) return console.log('product not in cart');
+//       updatedCart.products = updatedCart.products.filter(
+//         (product) => product.id !== id
+//       );
+//       updatedCart.totalPrice =
+//         updatedCart.totalPrice - product.price * product.qty;
+//       fs.writeFile(p, JSON.stringify(updatedCart), (err) => {
+//         if (err) console.log(err);
+//       });
+//     });
+//   }
+
+//   static getCart(cb) {
+//     fs.readFile(p, (err, fileContent) => {
+//       if (err) return cb(null);
+//       cb(JSON.parse(fileContent));
+//     });
+//   }
+// };
