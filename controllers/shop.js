@@ -46,9 +46,8 @@ exports.getIndex = (req, res, next) => {
 exports.postCart = (req, res, next) => {
   const { productId } = req.body;
   Product.findById(productId)
-    .then((product) => {
-      return req.user.addToCart(product);
-    })
+    .then((product) => req.user.addToCart(product))
+    .then(() => res.redirect('/cart'))
     .catch((err) => console.log(err));
 };
 
