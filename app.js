@@ -12,14 +12,14 @@ app.set('view engine', 'ejs');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
-// app.use((req, res, next) => {
-//   User.findById('614c9ad3cdee6bf9b57003c9')
-//     .then((user) => {
-//       req.user = new User(user.name, user.email, user.cart, user._id);
-//       next();
-//     })
-//     .catch((err) => console.log(err));
-// });
+app.use((req, res, next) => {
+  User.findById('614cd81b9f2b956c0a058319')
+    .then((user) => {
+      req.user = user;
+      next();
+    })
+    .catch((err) => console.log(err));
+});
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
@@ -33,6 +33,18 @@ mongoose
     )}@cluster0.rwx03.mongodb.net/nodejs-online-shop?retryWrites=true&w=majority`
   )
   .then(() => {
+    User.findOne().then((user) => {
+      if (!user) {
+        const user = new User({
+          name: 'Chris',
+          email: 'test@test.com',
+          cart: {
+            items: [],
+          },
+        });
+        user.save();
+      }
+    });
     app.listen(3000);
   })
   .catch((err) => {
