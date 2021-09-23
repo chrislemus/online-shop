@@ -77,31 +77,14 @@ exports.getCart = (req, res, next) => {
 exports.postOrder = (req, res, next) => {
   let fetchedCart;
   req.user
-    .getCart()
-    .then((cart) => {
-      fetchedCart = cart;
-      return cart.getProducts();
-    })
-    .then(async (products) => {
-      const order = await req.user.createOrder();
-      return { products, order };
-    })
-    .then(({ products, order }) => {
-      order.addProducts(
-        products.map((product) => {
-          product.orderItem = { quantity: product.cartItem.quantity };
-          return product;
-        })
-      );
-    })
-    .then(() => fetchedCart.setProducts(null))
+    .addOrder()
     .then(() => res.redirect('/orders'))
     .catch((err) => console.log(err));
 };
 
 exports.getOrders = (req, res, next) => {
   req.user
-    .getOrders({ include: ['products'] })
+    .getOrders()
     .then((orders) => {
       res.render('shop/orders', {
         path: '/orders',
