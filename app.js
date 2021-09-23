@@ -1,10 +1,10 @@
 const express = require('express');
+const mongoose = require('mongoose');
 require('dotenv').config();
 const path = require('path');
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const errorController = require('./controllers/error');
-const { mongoConnect } = require('./util/database');
 const User = require('./models/user');
 const app = express();
 
@@ -26,6 +26,15 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-mongoConnect(() => {
-  app.listen(3000);
-});
+mongoose
+  .connect(
+    `mongodb+srv://adminUser:${encodeURIComponent(
+      process.env.MONGO_DB_PASSWORD
+    )}@cluster0.rwx03.mongodb.net/nodejs-online-shop?retryWrites=true&w=majority`
+  )
+  .then(() => {
+    app.listen(3000);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
