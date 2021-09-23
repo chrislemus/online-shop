@@ -54,10 +54,8 @@ exports.postCart = (req, res, next) => {
 exports.postCartDeleteProduct = (req, res, next) => {
   const { productId } = req.body;
   req.user
-    .getCart()
-    .then((cart) => cart.getProducts({ where: { id: productId } }))
-    .then(([product]) => product.cartItem.destroy())
-    .then((result) => res.redirect('/cart'))
+    .deleteItemFromCart(productId)
+    .then(() => res.redirect('/cart'))
     .catch((err) => console.log(err));
 };
 
