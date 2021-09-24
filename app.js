@@ -1,5 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const session = require('express-session');
+const MongoStore = require('connect-mongodb-session')(session);
 require('dotenv').config();
 const path = require('path');
 const adminRoutes = require('./routes/admin');
@@ -7,12 +9,29 @@ const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
 const errorController = require('./controllers/error');
 const User = require('./models/user');
+const MONGODB_URI = `mongodb+srv://adminUser:${encodeURIComponent(
+  process.env.MONGO_DB_PASSWORD
+)}@cluster0.rwx03.mongodb.net/nodejs-online-shop?retryWrites=true&w=majority`;
+
 const app = express();
+const mongoDbStore = new MongoStore({
+  uri: MONGODB_URI,
+  collection: 'sessions',
+});
 
 app.set('view engine', 'ejs');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(
+  session({
+    secret: process.env.EXPRESS_SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: mongoDbStore,
+  })
+);
+
 app.use((req, res, next) => {
   User.findById('614cd81b9f2b956c0a058319')
     .then((user) => {
@@ -29,11 +48,7 @@ app.use(authRoutes);
 app.use(errorController.get404);
 
 mongoose
-  .connect(
-    `mongodb+srv://adminUser:${encodeURIComponent(
-      process.env.MONGO_DB_PASSWORD
-    )}@cluster0.rwx03.mongodb.net/nodejs-online-shop?retryWrites=true&w=majority`
-  )
+  .connect(MONGODB_URI)
   .then(() => {
     User.findOne().then((user) => {
       if (!user) {
