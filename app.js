@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
+const flash = require('connect-flash');
 require('dotenv').config();
 const path = require('path');
 const adminRoutes = require('./routes/admin');
@@ -36,6 +37,7 @@ app.use(
 );
 //its important to add middleware after session middleware above
 app.use(csrfProtection);
+app.use(flash());
 
 app.use((req, res, next) => {
   if (!req.session.user) {
